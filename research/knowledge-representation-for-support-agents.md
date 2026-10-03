@@ -4,6 +4,8 @@
 > **Scope:** How to represent domain knowledge for AI support agents — RAG, knowledge graphs, structured workflows
 > **Purpose:** Justify the tool-first architecture choice in this repository and document the trade-offs
 
+> **Correction note (2026-10-03):** An earlier version of this document stated "structured reasoning outperforms vector RAG." This was imprecise. The accurate community consensus is: **query type determines architecture**. Structured/graph approaches win on multi-hop reasoning; vector RAG wins on single-hop fact retrieval; tool-first bypasses retrieval entirely for real-time status queries. See the Comparison Table below.
+
 ---
 
 ## The Core Question
@@ -134,17 +136,25 @@ Query
 
 ## Comparison Table
 
+> **Important nuance:** No single architecture wins across all query types. The data below reflects each approach's strength zone, not a universal ranking.
+
 | Dimension | A: Pure RAG | B: KG + RAG | C: Tool-First |
 |---|---|---|---|
-| Accuracy (complex reasoning) | 50–60% | 85–90% | ~99% (on tool-reachable facts) |
+| Accuracy — single-hop fact retrieval | **High** | High | N/A (no retrieval) |
+| Accuracy — multi-hop reasoning | 50–60% | **85–90%** | N/A (no retrieval) |
+| Accuracy — real-time status queries | Low (no live data) | Low (no live data) | **~99%** |
 | Factual grounding | Probabilistic | Structured, traceable | Guaranteed (API) |
 | Setup complexity | Low | Medium | Medium–High |
 | Works without API access | Yes | Yes | No |
 | Works for open-ended Q&A | Yes | Yes | No |
-| Works for real-time status | No | Partially | Yes |
-| Self-improving | No | Yes (with auto-update) | No (rule updates are manual) |
+| Works for real-time status | No | No | **Yes** |
+| Self-improving | No | Yes (with auto-update) | No |
 | Hallucination risk | High | Low | None (on factual layer) |
-| Best for | FAQs, policies, docs | Complex policy reasoning | Status lookups, system queries |
+| Cost per query | $0.001 | $0.005–0.01 | $0.01–0.05 |
+| Latency | 100–500ms | 500ms–2s | 2–10s |
+| **Best for** | FAQs, policies, static docs | Policy reasoning, eligibility, multi-hop | Status lookups, live system queries |
+
+**Community consensus (2025–2026):** Use Vector RAG as default. Add GraphRAG when queries require relational reasoning. Use Tool-First when ground truth lives in a live API. Hybrid is normal in production.
 
 ---
 
@@ -186,13 +196,86 @@ Fini's Knowledge Atlas is a proprietary, closed-source implementation of Archite
 
 ---
 
+---
+
+## Extended Community Consensus (2025–2026)
+
+Beyond the RAG vs GraphRAG debate, five additional consensus points directly affect this repository's design.
+
+---
+
+### Consensus 1: Deterministic routing reduces LLM cost by 93%
+
+**Source:** Graph-Based Self-Healing Tool Routing ([arxiv 2603.01548](https://arxiv.org/pdf/2603.01548))
+
+> Separating concerns: monitors produce priority signals, graph routing handles routine decisions, LLM is invoked only when the graph returns no path. Reduces control-plane LLM calls by **93%** in benchmarks.
+
+**Applied in this repo:** The Result Router in `architecture.md` is a deterministic rule engine — no LLM involved in routing decisions. The LLM handles intent classification and response generation only.
+
+---
+
+### Consensus 2: Tool calling and RAG solve different problems
+
+**Source:** [RAG vs. Tool-Calling Agents (HuggingFace Blog)](https://huggingface.co/blog/prismberry-technologies/rag-vs-tool-calling-agents)
+
+> RAG helps an AI find and use relevant information from a knowledge base. Tool calling allows an AI to interact with external systems and perform operations. They are complementary, not competing.
+
+**Applied in this repo:** Architecture C (Tool-First) for live status queries. Architecture B (KG+RAG) reserved for policy reasoning in future versions. Neither replaces the other.
+
+---
+
+### Consensus 3: Anthropic's 5 agentic workflow patterns
+
+**Source:** [Anthropic Agentic Design Patterns](https://www.anthropic.com/engineering/claude-code-best-practices) + [MindStudio analysis](https://www.mindstudio.ai/blog/claude-design-6-agentic-patterns-vertical-ai-apps)
+
+The five composable patterns now recognized as the standard vocabulary:
+
+| Pattern | Description | Used in this repo |
+|---|---|---|
+| Prompt Chaining | Output of one LLM call → input of next | Intent → Collect → Generate |
+| **Routing** | Classify input → direct to specialized handler | Result Router (deterministic) |
+| Parallelization | Run multiple LLM calls simultaneously | — (future: multi-system query) |
+| Orchestrator-Workers | Orchestrator directs specialist agents | Agent Orchestrator |
+| Evaluator-Optimizer | One LLM evaluates another's output | — (planned: eval suite) |
+
+**Applied in this repo:** Routing + Orchestrator-Workers are the primary patterns. Routing is intentionally deterministic (not LLM-based) for the result classification step.
+
+---
+
+### Consensus 4: Symbolic guardrails, not prompt-based guardrails
+
+**Source:** [Don't Make Models Guess Security: Symbolic Guardrails for Domain-Specific AI Agents (arxiv 2604.15579)](https://arxiv.org/pdf/2604.15579)
+
+> LLM-based guardrails are probabilistic — a sufficiently crafted prompt can bypass them. For high-stakes domains, symbolic (code-enforced) guardrails are required.
+
+**Applied in this repo:** The "no write operations" constraint is enforced at the code level — the tool layer has no write methods. This is not a prompt instruction. It cannot be bypassed by a merchant's message.
+
+---
+
+### Consensus 5: Agentic RAG cost/latency tradeoff is real
+
+**Source:** [Agentic RAG in 2026: Patterns, Code, Observability (FutureAGI)](https://futureagi.com/blog/agentic-rag-systems-2025/)
+
+> Naive RAG: $0.001/query, 100–500ms. Agentic RAG (tool-calling): $0.01–0.10/query, 2–10s. The cost is 10–100x higher. This is acceptable for high-value enterprise support tickets, not for consumer chatbots.
+
+**Applied in this repo:** The acceptance criteria targets < $0.05/session and < 4s P95 latency — calibrated to the enterprise support context where each ticket has non-trivial human cost. The cost premium is justified by the automation of $50+ human effort per complex case.
+
+---
+
 ## Sources
 
 - [Graph-Enhanced RAG for E-Commerce Customer Support (arxiv 2509.14267)](https://arxiv.org/abs/2509.14267)
 - [RAG with Knowledge Graphs for Customer Service QA (arxiv 2404.17723)](https://arxiv.org/abs/2404.17723)
+- [RAG vs. GraphRAG: A Systematic Evaluation (arxiv 2502.11371)](https://arxiv.org/html/2502.11371v3)
+- [Do We Still Need GraphRAG? (arxiv 2604.09666)](https://arxiv.org/html/2604.09666v1)
 - [RAFT: Stateful Retrieval-Augmented Framework for Troubleshooting Agents](https://arxiv.org/pdf/2609.20754)
-- [Human Cognition Inspired RAG with Knowledge Graph (arxiv 2503.06567)](https://arxiv.org/pdf/2503.06567)
+- [Graph-Based Self-Healing Tool Routing (arxiv 2603.01548)](https://arxiv.org/pdf/2603.01548)
+- [Symbolic Guardrails for Domain-Specific AI Agents (arxiv 2604.15579)](https://arxiv.org/pdf/2604.15579)
+- [Microsoft GraphRAG open source announcement](https://www.microsoft.com/en-us/research/blog/graphrag-new-tool-for-complex-data-discovery-now-on-github/)
+- [microsoft/graphrag-benchmarking-datasets](https://github.com/microsoft/graphrag-benchmarking-datasets)
+- [RAG vs. Tool-Calling Agents — HuggingFace Blog](https://huggingface.co/blog/prismberry-technologies/rag-vs-tool-calling-agents)
+- [Agentic RAG in 2026: Patterns, Code, Observability — FutureAGI](https://futureagi.com/blog/agentic-rag-systems-2025/)
+- [Anthropic Claude Code Best Practices](https://www.anthropic.com/engineering/claude-code-best-practices)
 - [RAGless Architecture — Fini Blog](https://www.usefini.com/blog/what-is-ragless)
-- [The Knowledge Atlas — Fini Resource Library](https://www.usefini.com/resource-library/the-knowledge-atlas-structured-reasoning-and-autonomous-management-for-enterprise-ai-support)
 - [Graphiti — Real-Time Knowledge Graphs for AI Agents](https://github.com/getzep/graphiti)
 - [RAGFlow — Open-Source RAG Engine with Graph Support](https://github.com/infiniflow/ragflow)
