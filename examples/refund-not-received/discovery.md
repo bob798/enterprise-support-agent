@@ -92,6 +92,11 @@ Refund status queries appear simple but require cross-system investigation. The 
 |---|---|
 | 16–21 | **Strong candidate — proceed to Design** |
 
+**Industry benchmark:**
+Ada reports 74% automated resolution rate on payment support tickets; Fini reports 98% accuracy on billing actions (3M+ monthly resolutions). This scenario's deterministic lookup pattern — query order status, classify result, route — aligns with the case types driving those numbers. The gap between simple (5 min) and complex (0.5 day) handling time further signals high automation headroom on the simple tier.
+
+> Reference: [research/payment-support-ai-landscape.md](../../research/payment-support-ai-landscape.md)
+
 ---
 
 ## Risk Assessment
@@ -104,6 +109,11 @@ Refund status queries appear simple but require cross-system investigation. The 
 | Merchant stops pursuing issue due to false "resolved" | **High** | Agent must distinguish "status retrieved" from "problem resolved" |
 
 **Core principle:** In financial contexts, a confident wrong answer is worse than admitting uncertainty. The agent must escalate rather than guess.
+
+**Industry validation:**
+Fini (fintech-focused AI support platform) names this as their primary design constraint: *"a hallucinated refund is a direct financial loss."* Their RAGless architecture was built specifically to eliminate status inference — every claim must trace to a live API call, not a retrieved document. This validates the tool-first, grounding-required approach for this scenario.
+
+> Reference: [research/payment-support-ai-landscape.md](../../research/payment-support-ai-landscape.md)
 
 ---
 
