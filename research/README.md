@@ -9,6 +9,7 @@ Each document captures findings at a point in time — check the date header bef
 | Document | Topic | Last updated |
 |---|---|---|
 | [payment-support-ai-landscape.md](payment-support-ai-landscape.md) | AI platforms for payment / fintech support automation | 2026-10-03 |
+| [knowledge-representation-for-support-agents.md](knowledge-representation-for-support-agents.md) | RAG vs KG vs Tool-First — architecture comparison with academic evidence | 2026-10-03 |
 
 ## How to use this directory
 
