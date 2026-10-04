@@ -13,7 +13,7 @@ TEMPLATES = {
     "initiated": (
         "您好，已查询到订单 {order_id} 的退款状态：**已发起**，正在等待银行处理。\n\n"
         "退款金额：{amount} {currency}\n"
-        "预计到账时间：{expected_arrival or '3–5 个工作日'}\n\n"
+        "预计到账时间：{expected_arrival}\n\n"
         "银行处理通常需要 3–5 个工作日，请耐心等待。如超期仍未到账，请联系我们。"
     ),
     "succeeded": (
