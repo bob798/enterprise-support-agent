@@ -43,9 +43,29 @@ Support Channel
 
 ## Examples
 
+### Refund Not Received — 支付退款失败工单 AI 改造
+
+完整展示了支付行业客服岗位退款失败工单的 AI 改造过程：
+通过结构化 Discovery 评估 AI 适合性，梳理现有工作流和业务流；
+基于金融行业风险属性推导架构约束，用 AI 重构工作流；
+提升了系统自动化能力和工单处理效率，降低了人力成本；
+同时把对外服务一致性从管理承诺变成架构层保证，降低了客诉率和人员培训成本。
+整套方法论可复用到同类 AI 改造项目。
+
+| 文档 | 内容 |
+|---|---|
+| [discovery.md](examples/refund-not-received/discovery.md) | AI 适合性评估，19/21 分，行业基准对比 |
+| [workflow.md](examples/refund-not-received/workflow.md) | 11 步人工流程，3 个 AI 介入点，升级 payload 结构 |
+| [architecture.md](examples/refund-not-received/architecture.md) | 技术选型依据，LangGraph + Claude + FastAPI |
+| [risks.md](examples/refund-not-received/risks.md) | 10 个风险，R3 分 9/9，每个风险的缓解措施 |
+| [acceptance.md](examples/refund-not-received/acceptance.md) | F1–F10 功能标准，S1–S5 安全标准，160 个测试用例 |
+
+---
+
+### Charged After Cancellation — 取消订阅后仍扣费（计划中）
+
 | Example | Business Problem | Systems |
 |---|---|---|
-| [Refund Not Received](examples/refund-not-received/) | 退款迟迟未到账 | Support + CRM + Payment + Knowledge |
 | [Charged After Cancellation](examples/charged-after-cancellation/) | 取消订阅后仍扣费 | Support + CRM + Billing + Subscription |
 
 ---
