@@ -37,7 +37,9 @@ def _mock_classify(message: str) -> dict:
     is_refund = any(kw in text for kw in _REFUND_KEYWORDS)
 
     order_id = None
-    match = re.search(r"\b(\d{4,6})\b", message)
+    # \b fails in Python 3 with Chinese text (汉字 is \w).
+    # Use negative lookahead/lookbehind on digits instead.
+    match = re.search(r"(?<!\d)(\d{4,6})(?!\d)", message)
     if match:
         order_id = match.group(1)
 
