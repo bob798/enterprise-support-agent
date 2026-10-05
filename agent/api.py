@@ -52,6 +52,7 @@ def chat(req: ChatRequest):
         "refund_amount": None,
         "refund_currency": None,
         "expected_arrival": None,
+        "account_id": None,
         "account_status": None,
         "failure_reason_code": None,
         "next_action": None,

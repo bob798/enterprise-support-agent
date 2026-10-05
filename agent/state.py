@@ -34,6 +34,7 @@ class AgentState(TypedDict):
     expected_arrival: str | None   # ISO8601 or None
 
     # ── Tool: query_account_info output ──────────────────────────────────
+    account_id: str | None         # set by refund_status tool for account lookup
     account_status: str | None     # active | frozen | suspended | closed
     failure_reason_code: str | None  # insufficient_funds | account_frozen |
                                      # risk_control | bank_error | order_expired | unknown

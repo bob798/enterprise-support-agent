@@ -25,7 +25,7 @@ def run_refund_status(state: AgentState) -> dict:
 
     # Store account_id for potential account lookup
     if result.get("account_id"):
-        updates["_account_id"] = result["account_id"]
+        updates["account_id"] = result["account_id"]
 
     if result.get("error"):
         updates["failure_reason_code"] = result["error"]
@@ -34,7 +34,7 @@ def run_refund_status(state: AgentState) -> dict:
 
 
 def run_account_info(state: AgentState) -> dict:
-    account_id = state.get("_account_id") or state.get("merchant_id", "")
+    account_id = state.get("account_id") or ""
     result = query_account_info(account_id)
 
     return {
