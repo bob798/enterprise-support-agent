@@ -1,7 +1,7 @@
 # Enterprise Support Agent
 
 > **Enterprise AI Delivery Reference**
-> A practical repository showing how to discover, design, build, evaluate, and deploy enterprise AI workflows.
+> A work-in-progress reference repository documenting how to discover and design enterprise AI workflows, with implementation, evaluation, and deployment planned.
 
 ---
 
@@ -11,7 +11,7 @@ Most enterprise AI demos can answer questions.
 
 Production systems must also retrieve verified data, call business APIs, respect permissions, handle failures, escalate uncertain cases, and be continuously evaluated.
 
-This repository demonstrates how to close that gap.
+This repository documents a proposed approach to closing that gap. Design artifacts are available; implementation and measured results are not yet published.
 
 ---
 
@@ -45,20 +45,19 @@ Support Channel
 
 ### Refund Not Received — 支付退款失败工单 AI 改造
 
-完整展示了支付行业客服岗位退款失败工单的 AI 改造过程：
-通过结构化 Discovery 评估 AI 适合性，梳理现有工作流和业务流；
-基于金融行业风险属性推导架构约束，用 AI 重构工作流；
-提升了系统自动化能力和工单处理效率，降低了人力成本；
-同时把对外服务一致性从管理承诺变成架构层保证，降低了客诉率和人员培训成本。
-整套方法论可复用到同类 AI 改造项目。
+这是一个支付行业B2B退款未到账技术支持场景的**方案设计案例（尚未验证生产效果）**：
+通过结构化 Discovery 评估 AI 适合性，梳理人工工作流；
+提出基于业务API、确定性路由和人工接管的架构与风险控制方案；
+定义功能、安全、性能的验收标准与测试计划。
+**效率改善、成本下降和客诉改善均为待验证目标，而非已取得的成果。**
 
 | 文档 | 内容 |
 |---|---|
-| [discovery.md](examples/refund-not-received/discovery.md) | AI 适合性评估，19/21 分，行业基准对比 |
-| [workflow.md](examples/refund-not-received/workflow.md) | 11 步人工流程，3 个 AI 介入点，升级 payload 结构 |
-| [architecture.md](examples/refund-not-received/architecture.md) | 技术选型依据，LangGraph + Claude + FastAPI |
-| [risks.md](examples/refund-not-received/risks.md) | 10 个风险，R3 分 9/9，每个风险的缓解措施 |
-| [acceptance.md](examples/refund-not-received/acceptance.md) | F1–F10 功能标准，S1–S5 安全标准，160 个测试用例 |
+| [discovery.md](examples/refund-not-received/discovery.md) | AI 适合性评估（自定义评分19/21，非外部认证） |
+| [workflow.md](examples/refund-not-received/workflow.md) | 人工流程与拟议AI流程、升级 payload 结构 |
+| [architecture.md](examples/refund-not-received/architecture.md) | 拟议组件与技术选型（非已运行实现） |
+| [risks.md](examples/refund-not-received/risks.md) | 10 个设计风险及拟议缓解措施（尚待测试） |
+| [acceptance.md](examples/refund-not-received/acceptance.md) | F1–F10 功能标准、S1–S5 安全标准及160条拟议测试用例 |
 
 ---
 
@@ -88,13 +87,9 @@ Discover → Design → Build → Validate → Operate → (back to Discover)
 
 ---
 
-## Run the Demo
+## Demo Status
 
-```bash
-docker compose up
-```
-
-Then send a test message:
+A runnable demo is **not yet released**. Agent workflow, connectors, evaluation and deployment remain planned. The sample message below is a proposed future test input, not evidence of a working deployment:
 
 ```
 My refund for order #10248 has not arrived. It has been 7 days.
@@ -122,7 +117,7 @@ My refund for order #10248 has not arrived. It has been 7 days.
 | Component | Status |
 |---|---|
 | Delivery method (framework/) | In progress |
-| Example: Refund Not Received | In progress |
+| Example: Refund Not Received (design documents) | Available; implementation pending |
 | Example: Charged After Cancellation | Planned |
 | Agent workflow (agent/) | Planned |
 | CRM + Payment connectors | Planned |
