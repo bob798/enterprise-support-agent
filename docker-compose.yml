@@ -4,13 +4,13 @@ services:
   agent:
     build:
       context: .
-      dockerfile: deployment/Dockerfile
+      dockerfile: cases/refund-not-received/solution/deployment/Dockerfile
     ports:
       - "8000:8000"
     env_file:
       - .env
     environment:
-      - PYTHONPATH=/app
+      - PYTHONPATH=/app/src
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 10s
